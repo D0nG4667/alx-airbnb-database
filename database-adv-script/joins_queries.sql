@@ -29,7 +29,9 @@ FROM
 INNER JOIN 
     users AS u 
 ON 
-    b.user_id = u.user_id;
+    b.user_id = u.user_id
+ORDER BY 
+    b.booking_id;
 
 
 -----------------------------------------------------------
@@ -49,7 +51,9 @@ FROM
 LEFT JOIN 
     reviews AS r 
 ON 
-    p.property_id = r.property_id;
+    p.property_id = r.property_id
+ORDER BY 
+    p.property_id, r.review_id;
 
 
 -----------------------------------------------------------
@@ -68,4 +72,6 @@ FROM
 FULL OUTER JOIN 
     bookings AS b 
 ON 
-    u.user_id = b.user_id;
+    u.user_id = b.user_id
+ORDER BY 
+    u.user_id, b.booking_id;
