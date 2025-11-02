@@ -282,3 +282,55 @@ The subquery counts bookings for each user by referencing `u.user_id` from the o
 
 1. **Query 1:** List of properties with an average rating > 4.0
 2. **Query 2:** List of users who have made more than 3 bookings
+
+## 🧩 File: `aggregations_and_window_functions.sql`
+
+## Aggregations & Window Functions
+
+This directory contains SQL examples that demonstrate how to:
+
+- Use aggregation (`COUNT`, `GROUP BY`) to compute summary statistics.
+- Use window functions (`RANK`, `ROW_NUMBER`) to rank and order results.
+
+---
+
+### Objectives
+
+1. Compute the total number of bookings per user (including users with zero bookings).  
+2. Rank properties by the number of bookings they have received using window functions.
+
+---
+
+### Queries overview
+
+### 1. Total bookings per user
+
+**Approach:** Use a `LEFT JOIN` from `users` to an aggregated subquery on `bookings` so users with zero bookings are included. `COALESCE` converts `NULL` counts to `0`.
+
+**Key SQL features:** `COUNT(*)`, `GROUP BY`, `LEFT JOIN`, `COALESCE`.
+
+**Expected output columns:** `user_id`, `full_name`, `total_bookings` (ordered by `total_bookings DESC`).
+
+---
+
+### 2. Rank properties by bookings
+
+**Approach:** First compute bookings per property (aggregated). Then apply window functions:
+
+- `RANK()` to allow ties (same rank for equal booking counts).
+- `ROW_NUMBER()` to provide a deterministic unique ordering.
+
+**Key SQL features:** `WITH` (CTE), `COUNT`, `GROUP BY`, `RANK() OVER(...)`, `ROW_NUMBER() OVER(...)`.
+
+**Expected output columns:** `property_id`, `property_name`, `bookings_count`, `popularity_rank`, `row_number_order`.
+
+---
+
+### Performance & tuning tips
+
+- Ensure indexes exist on `bookings.user_id` and `bookings.property_id`.
+- Use `EXPLAIN` / `EXPLAIN ANALYZE` to inspect execution plans.
+- If aggregates are expensive at scale, consider:
+  - Materialized views for precomputed aggregates (refresh on schedule).
+  - Incremental aggregation jobs via background workers.
+- Limit result sets (pagination) for UI endpoints.
